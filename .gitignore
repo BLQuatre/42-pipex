@@ -1,0 +1,10 @@
+libft/
+objs/
+
+*.out
+*.o
+*.a
+pipex
+
+.vscode/
+.tests/
