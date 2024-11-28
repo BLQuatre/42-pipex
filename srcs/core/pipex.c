@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:28:14 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/27 02:01:56 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/11/28 00:09:19 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,54 +18,180 @@
 2 cmd1		argc - 3
 3 cmd2		argc - 2
 4 outfile	argc - 1
-
-
 argc == 5
-
 Last arg > argc - 1 == outfile
-
 */
 
-t_list	*get_cmds(int argc, char **argv)
+void	get_cmds(t_pipex *pipex, int argc, char **argv)
 {
 	t_list	*cmds;
-	t_list	*tmp;
+	t_list	*tmp_cmd;
 	t_cmd	*cmd;
 	int		i;
 
-	i = 1;
+	i = 2;
 	cmds = NULL;
 	while (argv[i] && i < argc - 1)
 	{
 		cmd = ft_cmd_get(argv[i]);
 		if (!cmd)
-			quit(1, "Errro2");
-		tmp = ft_lstnew(cmd);
-		if (!tmp)
-			quit(1, "Erro3");
-		ft_lstadd_back(&cmds, tmp);
+			quit(1, MALLOC_FAILED_MSG, pipex);
+		tmp_cmd = ft_lstnew(cmd);
+		if (!tmp_cmd)
+			quit(1, MALLOC_FAILED_MSG, pipex);
+		ft_lstadd_back(&cmds, tmp_cmd);
 		i++;
 	}
-	return (cmds);
+	pipex->cmds = cmds;
 }
 
-int	main(int argc, char **argv)
+void	check_args(t_pipex *pipex, char *infile, char *outfile)
 {
-	t_list	*cmds;
-	t_list	*tmp;
-	char	*outfile;
-	char	*infile;
+	if (access(infile, R_OK) == -1)
+		quit(1, NOT_ENOUGH_PERMS, pipex);
+	pipex->in_fd = open(infile, O_RDONLY);
+	pipex->out_fd = open(outfile, O_WRONLY | O_RDONLY | O_CREAT, 0644);
+	if (pipex->in_fd < 0 || pipex->out_fd < 0)
+		quit(1, "error6", pipex);
+}
+
+
+
+void exec_cmd(t_list *cmd, t_pipex *pipex, char **envp)
+{
+	// if (pipe();
+	// fork()
+	// if (child)
+	// {
+	// 	dup2()
+	// 	execve()
+	// }
+	// else
+	// {
+	// 	close()
+	// }
+	print_cmd((t_cmd *) cmd->content);
+	// cmd = cmd->next;
+	int pd[2];
+	if (pipe(pd) == -1)
+		quit(1, "PIPE NOT DONE", pipex);
+	pid_t pid = fork();
+	if (pid < 0)
+		perror("Something failed on trying to create a child process!\n");
+	else if (pid == 0) {
+		dup2(pd[1], STDIN_FILENO);
+		close(pd[0]);
+		close(pd[1]);
+		printf("[DEBUG] Child: Executing `%s`...\n",
+			((t_cmd *) cmd->content)->cmd
+		);
+		execve(
+			((t_cmd *) cmd->content)->cmd,
+			((t_cmd *) cmd->content)->args,
+			envp
+		);
+	} else { //Parent
+		dup2(pd[0], STDOUT_FILENO);
+		close(pd[0]);
+		close(pd[1]);
+		printf("[DEBUG] Child: Executing `%s`...\n",
+			((t_cmd *) cmd->content)->cmd
+		);
+		execve(
+			((t_cmd *) cmd->content)->cmd,
+			((t_cmd *) cmd->content)->args,
+			envp
+		);
+	}
+	waitpid(pid, NULL, 1);
+	printf("[DEBUG] Pid `%d` ended\n", pid);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_pipex *pipex;
+	t_list	*tmp_cmd;
 
 	if (argc < 5)
-		quit(1, "Erro1");
-	printf("Outfile: `%s`\n", outfile = argv[1]);
-	printf("Infile: `%s`\n", infile = argv[argc - 1]);
-	cmds = get_cmds(argc, argv);
-	tmp = cmds;
-	while (tmp)
+		quit(1, WRONG_ARGS_NB_MSG, NULL);
+	pipex = ft_calloc(1, sizeof(t_pipex));
+	check_args(pipex, argv[1], argv[argc - 1]);
+	printf("Infile fd  : `%d`\n", pipex->in_fd);
+	printf("Outfile fd : `%d`\n", pipex->out_fd);
+	get_cmds(pipex, argc, argv);
+
+	tmp_cmd = pipex->cmds;
+	while (tmp_cmd)
 	{
-		print_cmd((t_cmd *) tmp->content);
-		tmp = tmp->next;
+		exec_cmd(tmp_cmd, pipex, envp);
+		tmp_cmd = tmp_cmd->next;
 	}
-	ft_lstclear(&cmds, (void (*)(void *))ft_cmd_free);
+
+	// printf("Starting duping the pipe\n");
+	// int fd_in = open(infile, O_WRONLY | O_APPEND);
+	// int fd_out = open(outfile, O_WRONLY | O_APPEND);
+	// printf("Duping pipe %d to pipe %d\n", fd_in, STDIN_FILENO);
+	// dup2(fd_in, STDIN_FILENO);
+	// printf("Duping pipe %d to pipe %d\n", fd_out, STDOUT_FILENO);
+	// dup2(fd_out, STDOUT_FILENO);
+	// printf("Pipes: %d & %d\n", fd_in, fd_out);
+	// close(fd_in);
+	// close(fd_out);
+
+	// int pd[2]; //Pipe descriptor
+	// pipe(pd);
+
+	// int pid = fork();
+	// if (pid < 0) perror("Something failed on trying to create a child process!\n");
+	// else if (pid == 0) { //Child
+	// 	dup2(pd[1], STDIN_FILENO);
+	// 	close(pd[0]);
+	// 	close(pd[1]);
+	// 	printf("[DEBUG] Child: Executing `%s`...\n",
+	// 		((t_cmd *) cmds->content)->cmd
+	// 	);
+	// 	execve(
+	// 		((t_cmd *) cmds->content)->cmd,
+	// 		((t_cmd *) cmds->content)->params,
+	// 		NULL
+	// 	);
+	// } else { //Parent
+	// 	dup2(pd[0], STDOUT_FILENO);
+	// 	close(pd[0]);
+	// 	close(pd[1]);
+	// 	printf("[DEBUG] Child: Executing `%s`...\n",
+	// 		((t_cmd *) cmds->content)->cmd
+	// 	);
+	// 	execve(
+	// 		((t_cmd *) cmds->content)->cmd,
+	// 		((t_cmd *) cmds->content)->params,
+	// 		NULL
+	// 	);
+	// }
+	// // if (pid == 0)
+	// // {
+	// // 	printf("[DEBUG] Child: Executing `%s`...\n",
+	// // 		((t_cmd *) cmds->content)->cmd
+	// // 	);
+	// // 	execve(
+	// // 		((t_cmd *) cmds->content)->cmd,
+	// // 		((t_cmd *) cmds->content)->params,
+	// // 		NULL
+	// // 	);
+	// // }
+	// waitpid(pid, NULL, 1);
+	// printf("[DEBUG] Pid `%d` ended\n", pid);
+
+	// ft_lstclear(&cmds, (void (*)(void *))ft_cmd_free);
 }
+
+// //main()
+// {
+// 	ft_init_pipex() why
+// 	ft_check_args() done
+// 	ft_parse_cmds() done
+// 	ft_parse_args() done
+// 	while (cmds) wip
+// 		ft_exec()
+// 	ft_cleanup() no
+// }

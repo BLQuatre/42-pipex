@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 20:44:19 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/27 00:23:31 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/11/27 23:47:39 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ void	print_cmd(t_cmd *cmd)
 	}
 	printf("-----CMD-----\n");
 	printf("Cmd   : `%s`\n", cmd->cmd);
-	printf("Args  : `%d` (%p)\n", ft_tab_len(cmd->params), cmd->params);
-	if (cmd->params)
+	printf("Args  : `%d` (%p)\n", ft_tab_len(cmd->args), cmd->args);
+	if (cmd->args)
 	{
 		i = 0;
-		while (cmd->params[i])
+		while (cmd->args[i])
 		{
-			printf("  [%d] = `%s`\n", i, cmd->params[i]);
+			printf("  [%d] = `%s`\n", i, cmd->args[i]);
 			i++;
 		}
 	}
@@ -39,20 +39,20 @@ void	print_params(int argc, char **argv)
 {
 	int		i;
 	int		j;
-	char	**params;
+	char	**args;
 
 	printf("Args: `%d`\n", argc);
 	i = 1;
 	while (argv[i])
 	{
 		printf("  argv[%d] = `%s`\n", i, argv[i]);
-		params = ft_split(argv[i], ' ');
-		if (ft_tab_len(params) > 1)
+		args = ft_split(argv[i], ' ');
+		if (ft_tab_len(args) > 1)
 		{
 			j = 0;
-			while (params[j])
+			while (args[j])
 			{
-				printf("    params[%d] = `%s`\n", j, params[j]);
+				printf("    args[%d] = `%s`\n", j, args[j]);
 				j++;
 			}
 		}
