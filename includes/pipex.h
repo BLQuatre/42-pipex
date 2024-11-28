@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/27 23:26:59 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/11/28 04:39:36 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@ typedef struct s_cmd
 
 typedef struct s_pipex
 {
-	int		in_fd;
-	int		out_fd;
 	int		here_doc;
 	int		is_invalid_infile;
 	t_list	*cmds;

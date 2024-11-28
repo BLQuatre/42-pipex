@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     if (pid1 == 0)
     {
         // child process to read from file and send to pipe
-        int file_fd = open(argv[1], O_RDONLY);
+        int file_fd = open("infile", O_RDONLY);
         if (file_fd < 0)
         {
             perror("open");
@@ -39,8 +39,11 @@ int main(int argc, char *argv[])
 
         execlp("cat", "cat", NULL);
         perror("execlp");
-        return 5;
+		exit(127);
+		// TODO: do quit here
     }
+    
+	close(fd[1]);
 
     int pid2 = fork();
     if (pid2 < 0)
@@ -51,17 +54,25 @@ int main(int argc, char *argv[])
         // child process to read from pipe and run grep
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
-        close(fd[1]);
 
-        execlp("grep", "grep", "aw", NULL);
+		int file_fd2 = open("outfile", O_RDONLY | O_WRONLY | O_CREAT, 0644);
+		if (file_fd2 < 0)
+        {
+            perror("openee");
+            return 4;
+        }
+        dup2(file_fd2, STDOUT_FILENO);
+        close(file_fd2);
+
+        execlp("head", "head", "-5", NULL);
         perror("execlp");
-        return 6;
+		exit(127);
+		// TODO: do quit here
     }
 
     close(fd[0]);
-    close(fd[1]);
 
-    waitpid(pid1, NULL, 0);
+    // waitpid(pid1, NULL, 0);
     waitpid(pid2, NULL, 0);
 
     return 0;

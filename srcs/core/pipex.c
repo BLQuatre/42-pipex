@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:28:14 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/28 00:09:19 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/11/28 04:50:04 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,37 @@ void	get_cmds(t_pipex *pipex, int argc, char **argv)
 
 void	check_args(t_pipex *pipex, char *infile, char *outfile)
 {
+	int fd;
+
 	if (access(infile, R_OK) == -1)
 		quit(1, NOT_ENOUGH_PERMS, pipex);
-	pipex->in_fd = open(infile, O_RDONLY);
-	pipex->out_fd = open(outfile, O_WRONLY | O_RDONLY | O_CREAT, 0644);
-	if (pipex->in_fd < 0 || pipex->out_fd < 0)
-		quit(1, "error6", pipex);
+	fd = open(infile, O_RDONLY);
+	if (fd < 0)
+		quit(1, "no infile", pipex);
+	close(fd);
+	fd = open(outfile, O_WRONLY | O_RDONLY | O_CREAT, 0644);
+	if (fd < 0)
+		quit(1, "no outfiele", pipex);
+	close(fd);
 }
 
-
+void	read_from_file(t_pipex *pipex, char *filename)
+{
+	if (pipex->here_doc)
+	{
+		return ;
+	} // TODO: manage here doc
+	
+	int fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		quit(1, "eeee", pipex);
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+}
 
 void exec_cmd(t_list *cmd, t_pipex *pipex, char **envp)
 {
+	
 	// if (pipe();
 	// fork()
 	// if (child)
@@ -77,8 +96,11 @@ void exec_cmd(t_list *cmd, t_pipex *pipex, char **envp)
 		quit(1, "PIPE NOT DONE", pipex);
 	pid_t pid = fork();
 	if (pid < 0)
-		perror("Something failed on trying to create a child process!\n");
-	else if (pid == 0) {
+		quit(1, "pid not done", pipex);
+	
+	if (pid == 0) {
+		dup2(pipex->in_fd, STDIN_FILENO);
+		close(pipex->in_fd);
 		dup2(pd[1], STDIN_FILENO);
 		close(pd[0]);
 		close(pd[1]);
@@ -90,8 +112,9 @@ void exec_cmd(t_list *cmd, t_pipex *pipex, char **envp)
 			((t_cmd *) cmd->content)->args,
 			envp
 		);
-	} else { //Parent
-		dup2(pd[0], STDOUT_FILENO);
+	}
+	
+	dup2(pd[0], STDOUT_FILENO);
 		close(pd[0]);
 		close(pd[1]);
 		printf("[DEBUG] Child: Executing `%s`...\n",
@@ -102,7 +125,6 @@ void exec_cmd(t_list *cmd, t_pipex *pipex, char **envp)
 			((t_cmd *) cmd->content)->args,
 			envp
 		);
-	}
 	waitpid(pid, NULL, 1);
 	printf("[DEBUG] Pid `%d` ended\n", pid);
 }
@@ -116,10 +138,9 @@ int	main(int argc, char **argv, char **envp)
 		quit(1, WRONG_ARGS_NB_MSG, NULL);
 	pipex = ft_calloc(1, sizeof(t_pipex));
 	check_args(pipex, argv[1], argv[argc - 1]);
-	printf("Infile fd  : `%d`\n", pipex->in_fd);
-	printf("Outfile fd : `%d`\n", pipex->out_fd);
 	get_cmds(pipex, argc, argv);
 
+	read_from_file(pipex, argv[1]);
 	tmp_cmd = pipex->cmds;
 	while (tmp_cmd)
 	{
