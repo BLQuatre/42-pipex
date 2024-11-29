@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/28 04:39:36 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/11/29 07:22:29 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@
 # include "../libft/includes/ft_printf.h"
 
 /* Define : Messages */
+# define CMD_NOT_FOUND_MSG "command not found"
+# define WRONG_ARGS_MSG "wrong args"
+# define PERMISSION_DENIED "permission denied"
+
+
 # define WRONG_ARGS_NB_MSG "[MAIN] Wrong number of arguments"
 # define NOT_ENOUGH_PERMS "[MAIN] Not enough permissions to open/read the file"
 # define WRONG_FILE_EXT_MSG "[MAIN] Wrong file extension, map must be in .ber"
@@ -48,17 +53,10 @@ typedef struct s_pipex
 	t_list	*cmds;
 }	t_pipex;
 
-int		ft_tab_len(char **tab);
 
-/*** ERRORS */
-void	quit(int exit_code, char *msg, t_pipex *pipex);
+char	*ft_getenv(char **envp, char *env_name);
+char *ft_getpath(char **envp, char *cmd);
 
-/*** CMDS */
-t_cmd	*ft_cmd_get(char *str);
-void	ft_cmd_free(t_cmd *cmd);
-
-/*** DEBUG */
-void	print_cmd(t_cmd *cmd);
-void	print_params(int argc, char **argv);
+void	error(char *prgm, char *msg, char *arg, int exit_code);
 
 #endif

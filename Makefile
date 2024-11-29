@@ -6,7 +6,7 @@
 #    By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 10:30:46 by cauvray           #+#    #+#              #
-#    Updated: 2024/11/28 20:47:38 by cauvray          ###   ########.fr        #
+#    Updated: 2024/11/29 06:50:34 by cauvray          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,10 +18,9 @@ LIBFT_DIR	= libft
 LIBFT_FILE	= libft.a
 LIBFT_LIB	= $(addprefix $(LIBFT_DIR)/, $(LIBFT_FILE))
 
-CORE_FILES	= pipex.c utils.c errors.c cmds.c
-DEBUG_FILES	= debug.c
+CORE_FILES	= pipex.c utils.c errors.c
 
-ALL_FILES	= $(CORE_FILES) $(DEBUG_FILES)
+ALL_FILES	= $(CORE_FILES)
 
 SRCS_DIR	= srcs
 OBJS_DIR	= objs
