@@ -6,7 +6,7 @@
 #    By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 10:30:46 by cauvray           #+#    #+#              #
-#    Updated: 2024/11/27 17:35:00 by cauvray          ###   ########.fr        #
+#    Updated: 2024/11/28 20:47:38 by cauvray          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,6 +59,7 @@ lib:
 		cd $(LIBFT_DIR) && git pull; \
 	else \
 		echo "$(INFO) Cloning $(LIBFT_DIR)...$(GRAY)"; \
+		echo "$(GRAY)git clone https://github.com/BLQuatre/42-my_libft.git $(LIBFT_DIR)"; \
 		git clone https://github.com/BLQuatre/42-my_libft.git $(LIBFT_DIR); \
 	fi
 	@echo "$(INFO) Compiling $(LIBFT_DIR)...$(GRAY)"
