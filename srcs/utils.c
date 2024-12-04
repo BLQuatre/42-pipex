@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 05:49:15 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/29 06:47:37 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/04 13:43:36 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ char	*ft_getpath(char **envp, char *cmd)
 	char	*cmd_path;
 
 	founded = 0;
+	cmd_path = NULL;
 	paths = ft_split(ft_getenv(envp, "PATH"), ':');
+	if (!paths)
+		return (NULL);
 	i = 0;
 	while (paths[i])
 	{

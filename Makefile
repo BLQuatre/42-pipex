@@ -6,7 +6,7 @@
 #    By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 10:30:46 by cauvray           #+#    #+#              #
-#    Updated: 2024/11/29 06:50:34 by cauvray          ###   ########.fr        #
+#    Updated: 2024/12/04 15:57:15 by cauvray          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ $(OBJS_DIR):
 		mkdir -p $(OBJS_DIR); \
 	fi
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/*/%.c | $(OBJS_DIR)
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJS_DIR)
 	@echo "$(INFO) Compiling $<...$(GRAY)"
 	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
 
@@ -85,4 +85,6 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all lib clean fclean re
+bonus: all
+
+.PHONY: all lib clean fclean re bonus

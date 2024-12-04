@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/11/29 07:22:29 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/04 11:42:36 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,10 @@
 # include <stdio.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
+# include <unistd.h>
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
 
@@ -23,7 +27,6 @@
 # define CMD_NOT_FOUND_MSG "command not found"
 # define WRONG_ARGS_MSG "wrong args"
 # define PERMISSION_DENIED "permission denied"
-
 
 # define WRONG_ARGS_NB_MSG "[MAIN] Wrong number of arguments"
 # define NOT_ENOUGH_PERMS "[MAIN] Not enough permissions to open/read the file"
@@ -48,15 +51,19 @@ typedef struct s_cmd
 
 typedef struct s_pipex
 {
+	char	*shell;
+	char	**envp;
 	int		here_doc;
-	int		is_invalid_infile;
+	char	*limiter;
 	t_list	*cmds;
 }	t_pipex;
 
-
-char	*ft_getenv(char **envp, char *env_name);
-char *ft_getpath(char **envp, char *cmd);
-
+// *** Errors
 void	error(char *prgm, char *msg, char *arg, int exit_code);
+
+// *** Utils
+void	ft_free_tab(char **tab);
+char	*ft_getenv(char **envp, char *env_name);
+char	*ft_getpath(char **envp, char *cmd);
 
 #endif
