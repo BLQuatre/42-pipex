@@ -6,100 +6,79 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 05:56:08 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/05 01:16:18 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/05 02:57:12 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void exec(char *str_cmd, char **envp)
+static void	init_pipex(int argc, char *argv[], int *fd_in, int *i)
 {
-	char	**args;
-	char	*cmd;
+	int	tmp_fd_out;
 
-	if (!str_cmd)
-		return ;
-	args = ft_split(str_cmd, ' ');
-	if (!args)
-		return ;
-	if (!args[0])
+	*i = 2;
+	tmp_fd_out = open_file(argv[argc - 1], O_CREAT);
+	close(tmp_fd_out);
+	if (ft_strncmp(argv[1], "here_doc", 9) == 0 && argc >= 6)
 	{
-		free_tab(args);
-		return (ft_putstr_fd(str_cmd, 2),
-			ft_putstr_fd(": command not found\n", 2));
-	}
-	cmd = env_get_cmd_path(envp, args[0]);
-	if (!cmd)
-	{
-		ft_putstr_fd(args[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		return (free_tab(args));
-	}
-	execve(cmd, args, envp);
-	perror("pb");
-}
-
-void	pipe_cmd(char *str_cmd, char **envp)
-{
-	int		fd[2];
-	pid_t	pid;
-
-	if (pipe(fd) == -1)
-		perror("zoulou");
-	pid = fork();
-	if (pid < 0)
-		perror("zoulou2");
-	if (pid == 0)
-	{
-		close(fd[0]);
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[1]);
-		exec(str_cmd, envp);
+		init_heredoc(argv[2]);
+		*i = 3;
 	}
 	else
 	{
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
-		// waitpid(pid, NULL, 0);
+		*fd_in = open_file(argv[1], O_RDONLY);
+		dup2_close(*fd_in, STDIN_FILENO);
 	}
 }
 
-int open_file(char *file_name, int flags)
+void pid_add_to_lst(t_list **lst, int pid)
 {
-	int	fd;
+	t_list	*new;
 
-	fd = open(file_name, flags, 0777);
-	if (fd <= -1)
-	{
-		show_error(file_name, 0);
-		exit(1);
-	}
-	return (fd);
+	if (pid == 0)
+		return ;
+	new = ft_lstnew(&pid);
+	if (!new)
+		return ;
+	ft_lstadd_back(lst, new);
 }
 
+void	wait_pids(t_list *pids, int *exit)
+{
+	while (pids)
+	{
+		waitpid(*((int *) pids->content), exit, 0);
+		pids = pids->next;
+	}
+}
+
+void do_nothing(void *content)
+{
+	(void) content;
+}
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	int		fd_in;
-	int		fd_out;
-	int		i;
+	int	fd_in;
+	int	fd_out;
+	int	i;
+	t_list *pids;
+	int exit;
 
-	i = 1;
-	if (ft_strncmp(argv[i++], "here_doc", 9) == 0)
-	{
-		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND);
-		init_heredoc(argv[i++]);
-	} else {
-		fd_in = open_file(argv[1], O_RDONLY);
-		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
-	}
+	exit = 0;
+	if (argc <= 4)
+		return (ft_putstr_fd(WRONG_ARGS_MSG, 2), 1);
+	init_pipex(argc, argv, &fd_in, &i);
+	pids = NULL;
 	while (i < argc - 2)
-		pipe_cmd(argv[i++], envp);
-	dup2(fd_out, STDOUT_FILENO);
-	close(fd_out);
+		pid_add_to_lst(&pids, pipe_cmd(argv[i++], envp));
+	// wait_pids(pids, &exit);
+	ft_lstclear(&pids, do_nothing);
+	if (ft_strncmp(argv[1], "here_doc", 9) == 0 && argc >= 6)
+		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND);
+	else
+		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+	dup2_close(fd_out, STDOUT_FILENO);
 	exec(argv[i], envp);
-	return (0);
+	return (exit);
 }

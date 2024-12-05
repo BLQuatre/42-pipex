@@ -6,7 +6,7 @@
 #    By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 10:30:46 by cauvray           #+#    #+#              #
-#    Updated: 2024/12/05 01:22:05 by cauvray          ###   ########.fr        #
+#    Updated: 2024/12/05 02:20:11 by cauvray          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ LIBFT_DIR	= libft
 LIBFT_FILE	= libft.a
 LIBFT_LIB	= $(addprefix $(LIBFT_DIR)/, $(LIBFT_FILE))
 
-SRCS_FILES	= env.c errors.c heredoc.c pipex.c
+SRCS_FILES	= env.c errors.c file.c heredoc.c pipe.c pipex.c
 
 SRCS_DIR	= srcs
 OBJS_DIR	= objs
@@ -60,7 +60,7 @@ lib:
 		git clone https://github.com/BLQuatre/42-my_libft.git $(LIBFT_DIR); \
 	fi
 	@echo "$(INFO) Compiling $(LIBFT_DIR)...$(GRAY)"
-	@make -sC $(LIBFT_DIR)
+	@make -C $(LIBFT_DIR)
 	@echo "$(SUCCESS) $(LIBFT_DIR) compiled."
 
 

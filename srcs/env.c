@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 05:49:15 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/04 20:48:07 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/05 02:15:00 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static char	*env_get(char **envp, char *env_name)
 	return (NULL);
 }
 
-static char **env_get_splitted_path(char **envp)
+static char	**env_get_splitted_path(char **envp)
 {
 	char	**paths;
 	char	*env_path;
@@ -68,6 +68,7 @@ char	*env_get_cmd_path(char **envp, char *cmd)
 			return (free_tab(paths), cmd_path);
 		i++;
 	}
+	free(cmd_path);
 	free_tab(paths);
 	return (NULL);
 }

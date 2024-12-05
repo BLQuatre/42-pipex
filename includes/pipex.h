@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/04 21:34:24 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/05 02:56:25 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,33 +46,22 @@
 # define DUPLICATE_PLAYER_START_MSG "[MAP] Duplicate player start"
 # define DUPLICATE_EXIT_MSG "[MAP] Duplicate exit"
 
-// typedef struct s_cmd
-// {
-// 	char	*cmd;
-// 	char	**args;
-// }	t_cmd;
-
-typedef struct s_pipex
-{
-	char	**envp;
-	int		here_doc;
-	char	*limiter;
-	t_list	*cmds;
-}	t_pipex;
-
-// *** Cmd
-void	get_cmds(t_pipex *pipex, int index, int argc, char **args);
-// void	free_cmd(t_cmd *cmd);
-
 // *** Env
 char	*env_get_cmd_path(char **envp, char *cmd);
 
 // *** Errors
 void	free_tab(char **tab);
 void	show_error(char *msg, int is_custom);
-void	free_pipex(t_pipex *pipex);
+
+// *** File
+int		open_file(char *file_name, int flags);
 
 // *** Heredoc
 void	init_heredoc(char *limiter);
+
+// *** Pipe
+void	dup2_close(int dup_from, int dup_to);
+void	exec(char *str_cmd, char **envp);
+int		pipe_cmd(char *str_cmd, char **envp);
 
 #endif
