@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/04 11:42:36 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/04 21:34:24 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,17 @@
 # include <fcntl.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <errno.h>
 # include <string.h>
 # include <unistd.h>
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
+# include "../libft/includes/get_next_line.h"
 
 /* Define : Messages */
 # define CMD_NOT_FOUND_MSG "command not found"
-# define WRONG_ARGS_MSG "wrong args"
+# define WRONG_ARGS_MSG "infile cmd cmd outfile: wrong args"
+# define WRONG_ARGS_HD_MSG "here_doc limiter cmd cmd outfile: wrong args"
 # define PERMISSION_DENIED "permission denied"
 
 # define WRONG_ARGS_NB_MSG "[MAIN] Wrong number of arguments"
@@ -43,27 +46,33 @@
 # define DUPLICATE_PLAYER_START_MSG "[MAP] Duplicate player start"
 # define DUPLICATE_EXIT_MSG "[MAP] Duplicate exit"
 
-typedef struct s_cmd
-{
-	char	*cmd;
-	char	**args;
-}	t_cmd;
+// typedef struct s_cmd
+// {
+// 	char	*cmd;
+// 	char	**args;
+// }	t_cmd;
 
 typedef struct s_pipex
 {
-	char	*shell;
 	char	**envp;
 	int		here_doc;
 	char	*limiter;
 	t_list	*cmds;
 }	t_pipex;
 
-// *** Errors
-void	error(char *prgm, char *msg, char *arg, int exit_code);
+// *** Cmd
+void	get_cmds(t_pipex *pipex, int index, int argc, char **args);
+// void	free_cmd(t_cmd *cmd);
 
-// *** Utils
-void	ft_free_tab(char **tab);
-char	*ft_getenv(char **envp, char *env_name);
-char	*ft_getpath(char **envp, char *cmd);
+// *** Env
+char	*env_get_cmd_path(char **envp, char *cmd);
+
+// *** Errors
+void	free_tab(char **tab);
+void	show_error(char *msg, int is_custom);
+void	free_pipex(t_pipex *pipex);
+
+// *** Heredoc
+void	init_heredoc(char *limiter);
 
 #endif

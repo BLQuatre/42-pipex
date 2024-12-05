@@ -1,28 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 05:49:15 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/04 13:43:36 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/04 20:48:07 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	ft_free_tab(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab[i])
-		free(tab[i++]);
-	free(tab);
-}
-
-char	*ft_getenv(char **envp, char *env_name)
+static char	*env_get(char **envp, char *env_name)
 {
 	int	i;
 	int	j;
@@ -42,30 +32,42 @@ char	*ft_getenv(char **envp, char *env_name)
 	return (NULL);
 }
 
-char	*ft_getpath(char **envp, char *cmd)
+static char **env_get_splitted_path(char **envp)
+{
+	char	**paths;
+	char	*env_path;
+
+	env_path = env_get(envp, "PATH");
+	if (!env_path)
+		return (NULL);
+	paths = ft_split(env_path, ':');
+	if (!paths)
+		return (NULL);
+	return (paths);
+}
+
+char	*env_get_cmd_path(char **envp, char *cmd)
 {
 	char	**paths;
 	int		i;
 	char	*path;
-	int		founded;
 	char	*cmd_path;
 
-	founded = 0;
-	cmd_path = NULL;
-	paths = ft_split(ft_getenv(envp, "PATH"), ':');
+	paths = env_get_splitted_path(envp);
 	if (!paths)
 		return (NULL);
+	cmd_path = ft_strdup("");
 	i = 0;
 	while (paths[i])
 	{
+		free(cmd_path);
 		path = ft_strjoin(paths[i], "/");
 		cmd_path = ft_strjoin(path, cmd);
 		free(path);
-		if (!access(cmd_path, R_OK | X_OK))
-			founded = 1;
-		if (founded)
-			break ;
+		if (access(cmd_path, R_OK | X_OK) == 0)
+			return (free_tab(paths), cmd_path);
 		i++;
 	}
-	return (cmd_path);
+	free_tab(paths);
+	return (NULL);
 }

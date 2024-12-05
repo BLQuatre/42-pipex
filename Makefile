@@ -6,7 +6,7 @@
 #    By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/25 10:30:46 by cauvray           #+#    #+#              #
-#    Updated: 2024/12/04 15:57:15 by cauvray          ###   ########.fr        #
+#    Updated: 2024/12/05 01:22:05 by cauvray          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,13 +18,11 @@ LIBFT_DIR	= libft
 LIBFT_FILE	= libft.a
 LIBFT_LIB	= $(addprefix $(LIBFT_DIR)/, $(LIBFT_FILE))
 
-CORE_FILES	= pipex.c utils.c errors.c
-
-ALL_FILES	= $(CORE_FILES)
+SRCS_FILES	= env.c errors.c heredoc.c pipex.c
 
 SRCS_DIR	= srcs
 OBJS_DIR	= objs
-OBJS_FILES	= $(ALL_FILES:.c=.o)
+OBJS_FILES	= $(SRCS_FILES:.c=.o)
 OBJS		= $(addprefix $(OBJS_DIR)/, $(OBJS_FILES))
 
 INC_DIR		= includes
@@ -62,7 +60,7 @@ lib:
 		git clone https://github.com/BLQuatre/42-my_libft.git $(LIBFT_DIR); \
 	fi
 	@echo "$(INFO) Compiling $(LIBFT_DIR)...$(GRAY)"
-	@make -C $(LIBFT_DIR)
+	@make -sC $(LIBFT_DIR)
 	@echo "$(SUCCESS) $(LIBFT_DIR) compiled."
 
 
@@ -84,6 +82,23 @@ fclean: clean
 	@echo "$(SUCCESS) $(NAME) removed."
 
 re: fclean all
+
+CMD1=cat
+CMD2=wc -l
+
+test: all
+	@echo ----------------------------
+	@echo "$(INFO) Bash:"
+	< infile $(CMD1) | $(CMD2) > outfile.bash
+	@echo "$(INFO) Bash result:"
+	cat outfile.bash
+	@echo ----------------------------
+	@echo "$(INFO) Pipex:"
+	./pipex infile "$(CMD1)" "$(CMD2)" outfile.pipex
+	@echo "$(INFO) Pipex result:"
+	cat outfile.pipex
+
+	diff outfile.bash outfile.pipex
 
 bonus: all
 
