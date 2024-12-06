@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 16:24:54 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/05 03:55:21 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/06 18:27:30 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ static void	get_heredoc_input(char *limiter, int *fds)
 		line = get_next_line(STDIN_FILENO);
 		if (!line)
 			break ;
-		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
+		if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
+			&& ft_strlen(line) - 1 == ft_strlen(limiter))
 		{
 			get_next_line(-1);
 			free(line);
