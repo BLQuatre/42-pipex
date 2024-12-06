@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 05:56:08 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/05 04:03:37 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:34:59 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void	init_pipex(int argc, char *argv[], int *fd_in, int *i)
 	int	tmp_fd_out;
 
 	*i = 2;
-	tmp_fd_out = open_file(argv[argc - 1], O_CREAT);
+	tmp_fd_out = open_file(argv[argc - 1], O_CREAT, 0);
 	close(tmp_fd_out);
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0 && argc >= 6)
 	{
@@ -26,8 +26,9 @@ static void	init_pipex(int argc, char *argv[], int *fd_in, int *i)
 	}
 	else
 	{
-		*fd_in = open_file(argv[1], O_RDONLY);
-		dup2_close(*fd_in, STDIN_FILENO);
+		*fd_in = open_file(argv[1], O_RDONLY, 0);
+		if (*fd_in > 0)
+			dup2_close(*fd_in, STDIN_FILENO);
 	}
 }
 
@@ -75,9 +76,9 @@ int	main(int argc, char *argv[], char *envp[])
 	wait_pids(pids, &exit);
 	ft_lstclear(&pids, do_nothing);
 	if (ft_strncmp(argv[1], "here_doc", 9) == 0 && argc >= 6)
-		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND);
+		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND, 1);
 	else
-		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC);
+		fd_out = open_file(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 1);
 	dup2_close(fd_out, STDOUT_FILENO);
 	exec(argv[i], envp);
 	return (exit);

@@ -6,13 +6,13 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 01:44:08 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/05 01:51:13 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:35:22 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	open_file(char *file_name, int flags)
+int	open_file(char *file_name, int flags, int exit_on_error)
 {
 	int	fd;
 
@@ -20,7 +20,8 @@ int	open_file(char *file_name, int flags)
 	if (fd <= -1)
 	{
 		show_error(file_name, 0);
-		exit(1);
+		if (exit_on_error)
+			exit(1);
 	}
 	return (fd);
 }

@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/06 18:32:55 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/06 20:33:43 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	free_tab(char **tab);
 void	show_error(char *msg, int is_custom);
 
 // *** File
-int		open_file(char *file_name, int flags);
+int		open_file(char *file_name, int flags, int exit_on_error);
 
 // *** Heredoc
 void	init_heredoc(char *limiter);
