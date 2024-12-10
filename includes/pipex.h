@@ -6,7 +6,7 @@
 /*   By: cauvray <cauvray@student.42lehavre.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:32:32 by cauvray           #+#    #+#             */
-/*   Updated: 2024/12/06 20:33:43 by cauvray          ###   ########.fr       */
+/*   Updated: 2024/12/10 18:45:45 by cauvray          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # include "../libft/includes/get_next_line.h"
 
 /* Define : Messages */
-# define WRONG_ARGS_MSG "infile cmd cmd outfile: wrong args"
+# define WRONG_ARGS_MSG "infile cmd cmd outfile: wrong args\n"
 
 // *** Env
 char	*env_get_cmd_path(char **envp, char *cmd);
